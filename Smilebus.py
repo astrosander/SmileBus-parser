@@ -13,40 +13,16 @@ id_city_from = 3    #Mazyr
 id_city_to = 1      #Minsk
 
 dates = [#dates to parse
-    "10.05.2024",
-    "11.05.2024",
-    "12.05.2024",
     "13.05.2024",
     "14.05.2024",
     "15.05.2024",
-    "16.05.2024",
-    "17.05.2024",
-    "18.05.2024",
-    "19.05.2024",
-    "20.05.2024",
-    "21.05.2024",
-    "22.05.2024",
-    "23.05.2024",
-    "24.05.2024"
 ]
 DatesNum = len(dates)
 
 previous_content = [
-    "10.05.2024",
-    "11.05.2024",
-    "12.05.2024",
     "13.05.2024",
     "14.05.2024",
     "15.05.2024",
-    "16.05.2024",
-    "17.05.2024",
-    "18.05.2024",
-    "19.05.2024",
-    "20.05.2024",
-    "21.05.2024",
-    "22.05.2024",
-    "23.05.2024",
-    "24.05.2024"
 ]
 
 bot = telebot.TeleBot(TOKEN)
@@ -55,6 +31,13 @@ def send_notification(message):
 	print(message)
 	bot.send_message(CHAT_ID, message)
 
+
+def CompareStr(s1, s2):
+    for i in range(len(s1)):
+        if s1[i] != s2[i]:
+            if (int(s2[i]) - int(s1[i]) > 0):
+                return f"Number of seats for {s1[i+10:i+15]} has changed {s1[i]} -> {s2[i]}"
+            return f"One seat was taken. Total number of seats: {s2[i]}"
 
 def read_file_content(date):
     url = (
@@ -67,7 +50,7 @@ def read_file_content(date):
         if response.status_code == 200:
             html_content = response.text
             soup = BeautifulSoup(html_content, "html.parser")
-            return str(soup)
+            return str(soup)#.encode('utf-8').decode('unicode_escape')
         else:
             print("Failed to retrieve HTML content. Status code:", response.status_code)
     except Exception as e:
@@ -75,19 +58,23 @@ def read_file_content(date):
     return None
 
 
+
 def monitor_file_changes():
 
-    for i in range(DatesNum):
-    	previous_content[i] = read_file_content(dates[i])
+    for i in range(len(dates)):
+        previous_content[i] = read_file_content(dates[i])
 
     while True:
-    	for i in range(len(dates)):
-		    current_content = read_file_content(dates[i])
+        for i in range(len(dates)):
+            current_content = read_file_content(dates[i])
 
-		    if current_content != previous_content[i]:
-		        send_notification("⚠️A new trip showed up for " + str(dates[i]))
-		        previous_content[i] = current_content
+            if current_content != previous_content[i]:
+                send_notification(f"⚠️An update detected for {dates[i]}\n{CompareStr(previous_content[i], current_content)}" )
+                previous_content[i] = current_content
+            
+
 			
 
 if __name__ == "__main__":
+    send_notification("Ich arbeite")
     monitor_file_changes()
