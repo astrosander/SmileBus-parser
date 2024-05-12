@@ -8,7 +8,7 @@ def CompareStr(s1, s2):
         if s1[i] != s2[i]:
             if (int(s2[i]) - int(s1[i]) > 0):
                 return f"Number of seats for {s1[i+10:i+15]} has changed {s1[i]} -> {s2[i]}"
-            return f"One seat was taken. Total number of seats: {s2[i]}"
+            return f"One seat was taken for {s1[i+10:i+15]}. Total number of seats: {s2[i]}"
 
 def read_file_content(url):
     time.sleep(2)
